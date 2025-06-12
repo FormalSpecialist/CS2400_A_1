@@ -39,7 +39,6 @@ public interface BagInterface<T>
 
     /** Retrives all entries that are in the bag and places them in a returned array 
      *  @return A newly allocated array of all entries in the bag */
-
     public T[] toArray();
 
 

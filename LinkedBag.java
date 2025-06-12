@@ -217,19 +217,30 @@ public class LinkedBag<T> implements BagInterface<T>{
 
     public LinkedBag<T> union( LinkedBag<T> secondBag )
     {
-
-        // Creates a New Linked bag which will hold the combined contents of both bags, and is initialized with the content from secondBag
-        LinkedBag<T> everything = secondBag;
+        // Creates a New Linked bag which will hold the combined contents of both bags
+        LinkedBag<T> everything = new LinkedBag<>();
+        
+        // Integer to hold entries for secondBag
+        int num = secondBag.numEntries;
 
         // Initial Node to object recieving the call
-        Node<T> currentNode = firstNode;
+        Node<T> currentNode = secondBag.firstNode;
+
+        // Loop through the main objects in secondBag, and add the data to 'everything'
+        for (int i = 0; i < num; i++ )
+        {
+            everything.add( currentNode.getData() );
+            currentNode = currentNode.getNext();
+        } // end for
+
+        currentNode = firstNode;
 
         // Loop through the main objects in the bag recieving the call, and add the data to 'everything'
         for (int i = 0; i < numEntries; i++ )
         {
             everything.add( currentNode.getData() );
             currentNode = currentNode.getNext();
-        } // end While
+        } // end for
 
         return everything;
 
@@ -296,52 +307,47 @@ public class LinkedBag<T> implements BagInterface<T>{
 
     public LinkedBag<T> difference( LinkedBag<T> secondBag )
     {
-
         // Creates a New Linked bag which will hold the duplicate combined contents of both bags
-        LinkedBag<T> commonItems = new LinkedBag<T>();
-
+        LinkedBag<T> leftOver = new LinkedBag<>();
         
-        Node<T> leftOver = firstNode;
+        Node<T> currentNode = firstNode;
         T data;
         
         // Variables used to hold the frequency of data in each bag, and the number of times to add the frequency to the bag
         int countA, countB, addNumber;
 
         // While Loop to determine whether the current Node is of null value
-        while ( leftOver != null )
+        while ( currentNode != null )
         {
-            // If statement determines whether the current data within leftOver is already within the bag, leftOver, 
+            // If statement determines whether the current data within currentNode is already within the bag, currentNode, 
             // i.e. meaning it would be a duplicate that should not be added.
-            if ( !commonItems.contains( leftOver.getData() ) )
+            if ( !leftOver.contains( currentNode.getData() ) )
             {
 
-                data = leftOver.getData();
+                data = currentNode.getData();
                 
                 // Retrive the frequencies of data in each bag
                 countA = frequencyOf( data );
                 countB = secondBag.frequencyOf( data );
 
                 // Determine the total number of non-duplicates between the bags
-                if ( countA >= countB )
-                    addNumber = countA - countB;
-                else
-                    addNumber = countB - countA;
+                addNumber = (countA - countB);
 
                 // Add the number of non-duplicates into the new bag
                 for ( int i = 0; i < addNumber; i++ )
                 {
-                    commonItems.add( data );
+                    leftOver.add( data );
                 }
 
             }
 
             // Retrive next node to test
-            leftOver = leftOver.getNext();
+            currentNode = currentNode.getNext();
 
         }
 
         // Return the new bag
-        return( commonItems );
+        return( leftOver );
 
     }
 
