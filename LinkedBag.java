@@ -1,7 +1,7 @@
 // This Class impliments a bag using a linked list structure. As such, it allows for an ever changing number of 
 // elements and contains a variety of member methods to change the contents of the bag.
 
-public class LinkedBag<T> {
+public class LinkedBag<T> implements BagInterface<T>{
     
     private Node<T> firstNode;
     private int numEntries;
