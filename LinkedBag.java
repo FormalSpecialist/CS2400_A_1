@@ -390,4 +390,24 @@ public class LinkedBag<T> implements BagInterface<T>{
     }
 
 
+
+    @Override
+    public ResizeableArrayBag<T> union(ResizeableArrayBag<T> secondBag) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'union'");
+    }
+
+    @Override
+    public ResizeableArrayBag<T> intersection(ResizeableArrayBag<T> secondBag) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'intersection'");
+    }
+
+    @Override
+    public ResizeableArrayBag<T> difference(ResizeableArrayBag<T> secondBag) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'difference'");
+    }
+
+
 }

@@ -43,19 +43,36 @@ public interface BagInterface<T>
 
 
 
-    /** Combines the contents of two bags into a single bag, does not affect duplicates or order of objects. 
-     *  @param secondBag An additional bag object which will be combined with the bag object recieving the call.
-     *  @return A bag object of some size containing the contents of the bag object and the parameter secondBag. */
-    public LinkedBag<T> union( LinkedBag<T> secondBag );
+    /** Combines the contents of two bags into a single bag, does not affect duplicates or order of objects.
+     *  @param secondBag Another bag whose contents will be combined with this bag.
+     *  @return A new bag containing the contents of this bag and secondBag. */
+    public LinkedBag<T> union(LinkedBag<T> secondBag);
 
-    /** Compares two bag objects and creates an additional bag object which holds the overlapping values between the two bags
-     *  @param secondBag An additional bag object which will be comapred with the bag object recieving the call.
-     *  @return A bag object of some size containing ONLY the duplicate contents of the bag object and the parameter secondBag. */
-    public LinkedBag<T> intersection( LinkedBag<T> secondBag );
+    /** Combines the contents of two bags into a single bag, does not affect duplicates or order of objects.
+     *  @param secondBag Another bag whose contents will be combined with this bag.
+     *  @return A new bag containing the contents of this bag and secondBag. */
+    public ResizeableArrayBag<T> union(ResizeableArrayBag<T> secondBag);
 
-    /** Compares two bag objects and creates an additional bag object which holds the non-overlapping objects from the object which recieved the call.
-     *  @param secondBag An additional bag object which will be compared with the bag object recieving the call.
-     *  @return A bag object of some size containing ONLY the NON-duplicate contents of the bag object recieving the call. */
-    public LinkedBag<T> difference( LinkedBag<T> secondBag );
+
+    /** Creates a new bag containing the overlapping values between this bag and another bag.
+     *  @param secondBag Another bag to compare with this bag.
+     *  @return A new bag containing only the duplicate contents of this bag and secondBag. */
+    public LinkedBag<T> intersection(LinkedBag<T> secondBag);
+
+    /** Creates a new bag containing the overlapping values between this bag and another bag.
+     *  @param secondBag Another bag to compare with this bag.
+     *  @return A new bag containing only the duplicate contents of this bag and secondBag. */
+    public ResizeableArrayBag<T> intersection(ResizeableArrayBag<T> secondBag);
+
+
+    /** Creates a new bag containing the non-overlapping objects from this bag compared to another bag.
+     *  @param secondBag Another bag to compare with this bag.
+     *  @return A new bag containing only the non-duplicate contents of this bag. */
+    public LinkedBag<T> difference(LinkedBag<T> secondBag);
+
+    /** Creates a new bag containing the non-overlapping objects from this bag compared to another bag.
+     *  @param secondBag Another bag to compare with this bag.
+     *  @return A new bag containing only the non-duplicate contents of this bag. */
+    public ResizeableArrayBag<T> difference(ResizeableArrayBag<T> secondBag);
 
 } // End BagInterface
