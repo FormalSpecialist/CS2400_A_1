@@ -1,8 +1,8 @@
-//
+import java.util.Arrays;
 
 public class ResizeableArrayBag<T> implements BagInterface<T> {
     
-    private final T[] bag;
+    private T[] bag;
     private static final int DEFAULT_CAPACITY = 25;
     private static final int MAX_CAPACITY = 10000;
     private boolean intergrityOK = false;
@@ -15,6 +15,7 @@ public class ResizeableArrayBag<T> implements BagInterface<T> {
         @SuppressWarnings("unchecked")
         T[] tempBag = (T[]) new Object[DEFAULT_CAPACITY];
         bag = tempBag;
+        intergrityOK = true;
     }
 
     /** Creates an empty bag of an initial capacity user choice
@@ -22,11 +23,12 @@ public class ResizeableArrayBag<T> implements BagInterface<T> {
 
     public ResizeableArrayBag( int desiredCapacity )
     {
-        if ( desiredCapacity <= MAX_CAPACITY )
+        if ( desiredCapacity >= MAX_CAPACITY )
         {
             @SuppressWarnings("unchecked")
             T[] tempBag = (T[]) new Object[desiredCapacity];
             bag = tempBag;
+            intergrityOK = true;
         }
         else
         {
@@ -57,6 +59,27 @@ public class ResizeableArrayBag<T> implements BagInterface<T> {
         return numEntries == 0;
     }
 
+    /** Doubles the size of the array bag.
+     *  Precondition: checkIntegrity has been called. */
+
+     private void doubleCapacity()
+     {
+        int newLength = 2 * bag.length;
+        checkCapacity(newLength);
+        bag = Arrays.copyOf(bag, newLength);
+     }
+
+     /** Throws an exception if the client requests a capacity that is too large \
+      *  @param capacity the desired capacity of the array */
+
+     private void checkCapacity(int capacity)
+     {
+        if ( capacity > MAX_CAPACITY )
+        {
+            throw new IllegalStateException("Attempt to create a bag whose capacity exceeds allowed maximum of " + MAX_CAPACITY);
+        }
+     }
+
     /** Adds a new element to the Bag
      *  @param newEntry, the object to be added to the Bag
      *  @return True if the object was successfully added, False if it was unable to be added */
@@ -64,20 +87,16 @@ public class ResizeableArrayBag<T> implements BagInterface<T> {
     public boolean add( T newEntry )
     {
         checkIntegrity();
-
-        boolean result = true;
         
         if ( isFull() )
         {
-            result = false;
-        }
-        else
-        { // Assertion: result is true here
-            bag[numEntries] = newEntry;
-            numEntries++;
+            doubleCapacity();
         }
 
-        return result;
+        bag[numEntries] = newEntry;
+        numEntries++;
+
+        return true;
 
     }
 
@@ -124,6 +143,8 @@ public class ResizeableArrayBag<T> implements BagInterface<T> {
                 found = true;
                 where = index;
             }
+
+            index++;
         }
 
         return where;
@@ -187,7 +208,7 @@ public class ResizeableArrayBag<T> implements BagInterface<T> {
     public boolean contains( T anEntry )
     {
         checkIntegrity();
-        return getIndexOf(anEntry) > -1;
+        return getIndexOf(anEntry) >= 0;
     }
 
     /** Retrives all entries that are in the bag and places them in a returned array 
@@ -224,11 +245,19 @@ public class ResizeableArrayBag<T> implements BagInterface<T> {
 
     public ResizeableArrayBag<T> union( ResizeableArrayBag<T> secondBag )
     {
-        
-        //ResizeableArrayBag<T> bag = new ResizeableArrayBag<>();
+        ResizeableArrayBag<T> everything = new ResizeableArrayBag<>();
 
-        return secondBag;
+        for (int i = 0; i < numEntries; i++)
+        {
+            everything.add(bag[i]);
+        }
 
+        for (int i = 0; i < secondBag.numEntries; i++)
+        {
+            everything.add(secondBag.bag[i]);
+        }
+
+        return everything;
     }
 
     /** Compares two bag objects and creates an additional bag object which holds the overlapping values between the two bags
@@ -238,7 +267,45 @@ public class ResizeableArrayBag<T> implements BagInterface<T> {
     public ResizeableArrayBag<T> intersection( ResizeableArrayBag<T> secondBag )
     {
 
-        return secondBag;
+        ResizeableArrayBag<T> commonItems = new ResizeableArrayBag<>();
+
+        // Created variables to hold the value of index, frequency of a value in each array bag, and the total frequency of common items
+        int index = 0;
+        int freqA, freqB;
+        int common;
+
+        // While Loop to loop through each item in the first bag
+        while ( index < this.numEntries )
+        {
+
+            // Assign a variable to the data being tested
+            T data = bag[index];
+
+            // Determine if the data has already been added to commonItems
+            if ( !commonItems.contains( data ) )
+            {
+                
+                // Find the frequency of data in each bag object
+                freqA = frequencyOf( data );
+                freqB = secondBag.frequencyOf(data);
+
+                // Determine the smallest frequency of data between the two bags
+                if ( freqB >= freqA )
+                    common = freqA;
+                else    
+                    common = freqB;
+                
+                // Add the smallest frequency of data between the two bags to commonItems.
+                for ( int i = 0; i < common; i++)
+                    commonItems.add(data);
+                    
+            }
+
+            index++;
+
+        }
+
+        return commonItems;
 
     }
 
@@ -249,11 +316,53 @@ public class ResizeableArrayBag<T> implements BagInterface<T> {
     public ResizeableArrayBag<T> difference( ResizeableArrayBag<T> secondBag )
     {
         
-        return secondBag;
+        ResizeableArrayBag<T> leftOver = new ResizeableArrayBag<>();
+        
+        T data;
+        
+        // Variables used to hold the frequency of data in each bag, and the number of times to add the frequency to the bag
+        int freqA, freqB, addNumber;
+        int index = 0;
+
+        // While Loop to determine whether the current Node is of null value
+        while ( index < numEntries )
+        {
+
+            data = bag[index];
+            
+            // If statement determines whether the current data within currentNode is already within the bag, currentNode, 
+            // i.e. meaning it would be a duplicate that should not be added.
+            if ( !leftOver.contains( data ) )
+            {
+                
+                // Retrive the frequencies of data in each bag
+                freqA = frequencyOf( data );
+                freqB = secondBag.frequencyOf( data );
+
+                // Determine the total number of non-duplicates between the bags
+                addNumber = (freqA - freqB);
+
+                // Add the number of non-duplicates into the new bag
+                for ( int i = 0; i < addNumber; i++ )
+                {
+                    leftOver.add( data );
+                }
+
+            }
+
+            // increase the index
+            index++;
+
+        }
+
+        // Return the new bag
+        return( leftOver );
 
     }
     
     
+    // Unsupported Methods
+
     @Override
     public LinkedBag<T> union(LinkedBag<T> secondBag) {
         // TODO Auto-generated method stub
